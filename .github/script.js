@@ -3,10 +3,10 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(600, 400);
+  createCanvas(800, 500);
 }
 
 function draw() {
   // Display the background image on the canvas
-  image(LevelsBackground, 0, 0, 600, 400);
+  image(LevelsBackground, 0, 0, 800, 500);
 }
