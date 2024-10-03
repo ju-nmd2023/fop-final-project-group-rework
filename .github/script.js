@@ -1,9 +1,9 @@
 
-
 let LevelsBackground;
 let TheBall;
-let ballX = 400;
-let ballY = 400;
+let ballX = 630;
+let ballY = 500;
+let ballMoving = false;
 
 function preload() {
   LevelsBackground = loadImage("img/GoalDash.png");
@@ -11,19 +11,29 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(800, 500);
+  createCanvas(1250, 550);
 }
 
 function draw() {
-  // Display the background image on the canvas
-  image(LevelsBackground, 0, 0, 800, 500);
+  // Display the background + ball image on the canvas
+  image(LevelsBackground, 0, 0, 1250, 550);
   image(TheBall, ballX, ballY, 40, 40);
+
+  //Ball movment whilst shooting
+  if (ballMoving) {
+    ballY -= 20;
+  }
+  
+  //Ball reaches the goal
+  if (ballY < 100) {
+    ballMoving = false;
+  }
 }
 
+
 function keyPressed() {
-  // Check if the "Enter" key is pressed
+  // Making the ball shoot when "enter" is pressed
   if (keyCode === ENTER) {
-    // Move the ball upwards
-    ballY -= 10;
+    ballMoving = true;
   }
 }
