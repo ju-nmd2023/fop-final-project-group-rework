@@ -1,23 +1,36 @@
 
 let LevelsBackground;
 let TheBall;
+let startScreen;
 let ballX = 630;
 let ballY = 500;
 let ballMoving = false;
+let gameStarted = false;
 
 function preload() {
-  LevelsBackground = loadImage("img/GoalDash.png");
+  LevelsBackground = loadImage("img/footballgoal2.png");
   TheBall = loadImage("img/football.png");
+  startScreen = loadImage("img/dashstartscreen.png");
 }
 
 function setup() {
-  createCanvas(1250, 550);
+  createCanvas(1280, 580);
 }
 
 function draw() {
+
+  if (!gameStarted) {
+    // Display start screen
+    image(startScreen, 0, 0 ,1280, 580);
+    fill(255); // White text
+    textSize(50);
+    textAlign(CENTER, CENTER);
+    text("Press ENTER to Start", width / 2, height / 2);
+  } else {
+ 
   // Display the background + ball image on the canvas
-  image(LevelsBackground, 0, 0, 1250, 550);
-  image(TheBall, ballX, ballY, 40, 40);
+  image(LevelsBackground, 0, 0, 1280, 580);
+  image(TheBall, ballX, ballY, 20,20);
 
   //Ball movment whilst shooting
   if (ballMoving) {
@@ -25,15 +38,21 @@ function draw() {
   }
   
   //Ball reaches the goal
-  if (ballY < 100) {
+  if (ballY < 200) {
     ballMoving = false;
   }
+}
 }
 
 
 function keyPressed() {
-  // Making the ball shoot when "enter" is pressed
+
   if (keyCode === ENTER) {
-    ballMoving = true;
+    if (!gameStarted) {
+
+      gameStarted = true;
+    } else {
+      ballMoving = true;
+    }
   }
 }
