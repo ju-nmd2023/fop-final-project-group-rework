@@ -8,6 +8,8 @@ let gameStarted = false;
 let wallPlayerOneX = 640;
 let wallPlayerOneSpeed = 1;
 let wallPlayerOneDirection = 1;
+let wallWidth = 40;
+let wallHeight = 80;
 
 // Loads the images
 function preload() {
@@ -40,6 +42,18 @@ function draw() {
     // Ball movement whilst shooting
     if (ballMoving) {
       ballY -= 10; // Adjust the movement speed
+    }
+
+    //check for collision
+    if (
+      ballX < wallPlayerOneX + wallWidth &&
+      ballX + 40 > wallPlayerOneX &&
+      ballY < height / 2 + wallHeight &&
+      ballY + 40 > height / 2
+    ) {
+      //collision detected
+      ballMoving = false; //this stops the ball
+      ballY += 5; //this pushes the ball back slightly
     }
 
     // Ball reaches the goal
