@@ -24,11 +24,44 @@ function setup() {
   // Set initial ball position dynamically
   ballX = width / 2 - 45; // Centers the ball on the canvas
   ballY = height - 80; // Position ball near the bottom
-
-  wallPlayerOne = new WallPlayer(width / 2, height / 2, 40, 80, 3, width / 2 - 200, width / 2 + 100);
-  wallPlayerTwo = new WallPlayer(width / 2 - 150, height / 3, 40, 80, 4, width / 2 - 300, width / 2 + 200);
-  wallPlayerThree = new WallPlayer(width / 2 + 100, height / 3 + 100, 40, 80, 5, width / 2 - 400, width / 2 + 300);
-  wallPlayerFour = new WallPlayer(width / 2 + 150, height / 4, 40, 80, 6, width / 2 - 500, width / 2 + 400);
+ 
+  // Positions for WallPlayers
+  wallPlayerOne = new WallPlayer(
+    width / 2,
+    height / 2 + 170,
+    40,
+    80,
+    4,
+    width / 2 - 200,
+    width / 2 + 100
+  );
+  wallPlayerTwo = new WallPlayer(
+    width / 2 - 150,
+    height / 3 + 220,
+    40,
+    80,
+    5,
+    width / 2 - 220,
+    width / 2 + 120
+  );
+  wallPlayerThree = new WallPlayer(
+    width / 2 + 100,
+    height / 3 + 130,
+    40,
+    80,
+    6,
+    width / 2 - 320,
+    width / 2 + 250
+  );
+  wallPlayerFour = new WallPlayer(
+    width / 2 + 150,
+    height / 4 + 110,
+    40,
+    80,
+    7,
+    width / 2 - 270,
+    width / 2 + 190
+  );
 }
 
 // WallPlayer class definition
@@ -98,7 +131,10 @@ function draw() {
       wallPlayerOne.display();
       wallPlayerTwo.move();
       wallPlayerTwo.display();
-      if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40)) {
+      if (
+        wallPlayerOne.checkCollision(ballX, ballY, 40) ||
+        wallPlayerTwo.checkCollision(ballX, ballY, 40)
+      ) {
         restartToLevelOne();
       }
     } else if (currentLevel === 3) {
@@ -108,9 +144,13 @@ function draw() {
       wallPlayerTwo.display();
       wallPlayerThree.move();
       wallPlayerThree.display();
-      if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40) || wallPlayerThree.checkCollision(ballX, ballY, 40)) {
+      if (
+        wallPlayerOne.checkCollision(ballX, ballY, 40) ||
+        wallPlayerTwo.checkCollision(ballX, ballY, 40) ||
+        wallPlayerThree.checkCollision(ballX, ballY, 40)
+      ) {
         //collision detected, reset to level 1
-        restartToLevelOne(); 
+        restartToLevelOne();
       }
     } else if (currentLevel === 4) {
       wallPlayerOne.move();
@@ -121,17 +161,22 @@ function draw() {
       wallPlayerThree.display();
       wallPlayerFour.move();
       wallPlayerFour.display();
-      if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40) || wallPlayerThree.checkCollision(ballX, ballY, 40) || wallPlayerFour.checkCollision(ballX, ballY, 40)) {
+      if (
+        wallPlayerOne.checkCollision(ballX, ballY, 40) ||
+        wallPlayerTwo.checkCollision(ballX, ballY, 40) ||
+        wallPlayerThree.checkCollision(ballX, ballY, 40) ||
+        wallPlayerFour.checkCollision(ballX, ballY, 40)
+      ) {
         //collision detected, back to level 1
         restartToLevelOne();
       }
     }
 
-        // Check if ball touches the top of the screen (wall)
-        if (ballY <= 0) {
-          // Ball touches the wall, reset game to level 1
-          restartToLevelOne();
-        }
+    // Check if ball touches the top of the screen (wall)
+    if (ballY <= 0) {
+      // Ball touches the wall, reset game to level 1
+      restartToLevelOne();
+    }
 
     // Check if ball reaches goal
     if (ballY < height * 0.2) {
