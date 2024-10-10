@@ -1,7 +1,8 @@
 // Variables
-let gameScreen;
-let TheBall;
 let startScreen;
+let gameScreen;
+let endScreen;
+let TheBall;
 let ballX = 640;
 let ballY = 500;
 let ballMoving = false;
@@ -14,9 +15,10 @@ let goalDisplayTime = 60; // Time to display "Goal!" (in frames)
 
 // Loads the images
 function preload() {
-  gameScreen = loadImage("img/gamescreen.png");
-  TheBall = loadImage("img/football.png");
   startScreen = loadImage("img/startscreen.png");
+  gameScreen = loadImage("img/gamescreen.png");
+  endScreen = loadImage("img/endscreen.png");
+  TheBall = loadImage("img/football.png");
   wallPlayerOneImage = loadImage("img/WP1.png");
   wallPlayerTwoImage = loadImage("img/WP2.png");
   wallPlayerThreeImage = loadImage("img/WP3.png");
