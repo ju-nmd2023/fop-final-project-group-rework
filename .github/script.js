@@ -1,3 +1,4 @@
+// Variables
 let gameScreen;
 let TheBall;
 let startScreen;
@@ -5,13 +6,7 @@ let ballX = 640;
 let ballY = 500;
 let ballMoving = false;
 let gameStarted = false;
-let wallPlayerOneX = 640;
-let wallPlayerOneSpeed = 1;
-let wallPlayerOneDirection = 1;
-let wallPlayerTwoX = 340;
-let wallPlayerTwoSpeed = 2;
-let wallPlayerTwoDirection = 1;
-let wallWidth = 40;
+let wallPlayerOne, wallPlayerTwo, wallPlayerThree, wallPlayerFour;
 let wallHeight = 80;
 let currentLevel = 1;
 
@@ -30,9 +25,50 @@ function setup() {
   ballX = width / 2 - 45; // Centers the ball on the canvas
   ballY = height - 80; // Position ball near the bottom
 
-  // Initialize player's position
-  wallPlayerOneX = width / 2;
-  wallPlayerTwoX = width / 2 - 150;
+  wallPlayerOne = new WallPlayer(width / 2, height / 2, 40, 80, 3, width / 2 - 200, width / 2 + 100);
+  wallPlayerTwo = new WallPlayer(width / 2 - 150, height / 3, 40, 80, 4, width / 2 - 300, width / 2 + 200);
+  wallPlayerThree = new WallPlayer(width / 2 + 100, height / 3 + 100, 40, 80, 5, width / 2 - 400, width / 2 + 300);
+  wallPlayerFour = new WallPlayer(width / 2 + 150, height / 4, 40, 80, 6, width / 2 - 500, width / 2 + 400);
+}
+
+// WallPlayer class definition
+class WallPlayer {
+  constructor(x, y, width, height, speed, leftBound, rightBound) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.speed = speed;
+    this.direction = 1;
+    this.leftBound = leftBound;
+    this.rightBound = rightBound;
+  }
+
+  // Display wallplayer
+  display() {
+    fill(30, 144, 255);
+    rect(this.x, this.y, this.width, this.height);
+  }
+
+  // Move wallplayer with boundary checks
+  move() {
+    this.x += this.speed * this.direction;
+
+    // Reverse direction if wallplayer hits boundaries
+    if (this.x > this.rightBound || this.x < this.leftBound) {
+      this.direction *= -1;
+    }
+  }
+
+  // Check for collision with ball and wallplayer
+  checkCollision(ballX, ballY, ballSize) {
+    return (
+      ballX < this.x + this.width &&
+      ballX + ballSize > this.x &&
+      ballY < this.y + this.height &&
+      ballY + ballSize > this.y
+    );
+  }
 }
 
 function draw() {
@@ -40,89 +76,73 @@ function draw() {
     // Display start screen
     image(startScreen, 0, 0, width, height); // Adjust to screen size
   } else {
+    // Display Level 1 game screen
+    image(gameScreen, 0, 0, width, height); // Adjust to screen size
+    image(TheBall, ballX, ballY, 40, 40); // Display ball
+
+    // Ball movement whilst shooting
+    if (ballMoving) {
+      ballY -= 10; // Adjust the movement speed
+    }
+
+    // Checks for collision with wall player 1
     if (currentLevel === 1) {
-      // Display Level 1 game screen
-      image(gameScreen, 0, 0, width, height); // Adjust to screen size
-      image(TheBall, ballX, ballY, 40, 40); // Display ball
-
-      // Ball movement whilst shooting
-      if (ballMoving) {
-        ballY -= 10; // Adjust the movement speed
-      }
-
-      // Checks for collision with wall player
-      if (
-        ballX < wallPlayerOneX + wallWidth &&
-        ballX + 40 > wallPlayerOneX &&
-        ballY < height / 2 + wallHeight &&
-        ballY + 40 > height / 2
-      ) {
-        //collision detected
-        ballMoving = false; //this stops the ball
-        ballY += 5; //this pushes the ball back slightly
-      }
-
-      // Ball reaches the goal
-      if (ballY < height * 0.2) {
+      wallPlayerOne.move();
+      wallPlayerOne.display();
+      if (wallPlayerOne.checkCollision(ballX, ballY, 40)) {
         ballMoving = false;
-        currentLevel = 2; // Switch to level 2
-        resetLevel2(); // Reset ball and wall player positions for Lv2
+        ballY += 5;
       }
-
-      // Update wall player position
-      updateWallPlayerOne();
     } else if (currentLevel === 2) {
-      image(gameScreen, 0, 0, width, height); // Adjust to screen size
-      image(TheBall, ballX, ballY, 40, 40); // Display ball
-      fill(255);
-      textSize(80);
-      text("SCORE!!!", width / 2 - 190, height / 2 - 300);
-
-      // Ball movement while shooting in Level 2
-      if (ballMoving) {
-        ballY -= 10; // Adjust the movement speed
+      wallPlayerOne.move();
+      wallPlayerOne.display();
+      wallPlayerTwo.move();
+      wallPlayerTwo.display();
+      if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40)) {
+        ballMoving = false;
+        ballY += 5;
       }
+    } else if (currentLevel === 3) {
+      wallPlayerOne.move();
+      wallPlayerOne.display();
+      wallPlayerTwo.move();
+      wallPlayerTwo.display();
+      wallPlayerThree.move();
+      wallPlayerThree.display();
+      if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40) || wallPlayerThree.checkCollision(ballX, ballY, 40)) {
+        ballMoving = false;
+        ballY += 5;
+      }
+    } else if (currentLevel === 4) {
+      wallPlayerOne.move();
+      wallPlayerOne.display();
+      wallPlayerTwo.move();
+      wallPlayerTwo.display();
+      wallPlayerThree.move();
+      wallPlayerThree.display();
+      wallPlayerFour.move();
+      wallPlayerFour.display();
+      if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40) || wallPlayerThree.checkCollision(ballX, ballY, 40) || wallPlayerFour.checkCollision(ballX, ballY, 40)) {
+        ballMoving = false;
+        ballY += 5;
+      }
+    }
 
-      // Update and draw 2 wall players
-      updateWallPlayerOne();
-      updateWallPlayerTwo();
+    // Check if ball reaches goal
+    if (ballY < height * 0.2) {
+      ballMoving = false;
+      if (currentLevel < 4) {
+        currentLevel++; // Progress to next level
+      }
+      resetGame(); // Reset for next level
     }
   }
 }
 
-// Update wall player´s position for Level 1 and Level 2
-function updateWallPlayerOne() {
-  // Update wall player's position
-  wallPlayerOneX += wallPlayerOneSpeed * wallPlayerOneDirection;
-
-  // Check if wall player hits the right or left edge
-  if (wallPlayerOneX > width / 2 + 100 || wallPlayerOneX < width / 2 - 200) {
-    wallPlayerOneDirection *= -1; // Reverse direction
-  }
-
-  // Initial drawing of wall players
-  fill(30, 144, 255);
-  rect(wallPlayerOneX, height / 2, 40, 80);
-}
-
-function updateWallPlayerTwo() {
-  wallPlayerTwoX += wallPlayerTwoSpeed * wallPlayerTwoDirection;
-
-  if (wallPlayerTwoX > width / 2 + 200 || wallPlayerTwoX < width / 2 - 300) {
-    wallPlayerTwoDirection *= -1; // Reverse direction
-  }
-
-  // Drawing wall player 2
-  fill(30, 144, 255);
-  rect(wallPlayerTwoX, height / 3, 40, 80); // Draw second player in different Y position
-}
-
-// Reset ball and wall player positions for Level 2
-function resetLevel2() {
+// Reset ball and wall player positions for next level
+function resetGame() {
   ballX = width / 2 - 45;
   ballY = height - 80;
-  wallPlayerOneX = width / 2;
-  wallPlayerTwoX = width / 2 - 150;
 }
 
 function keyPressed() {
