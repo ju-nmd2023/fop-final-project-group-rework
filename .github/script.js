@@ -85,7 +85,7 @@ function draw() {
     // Display current level
     textSize(32);
     fill(255);
-    text("Level: " + currentLevel, 20, 40);
+    text("Level: " + currentLevel, 60, 90);
 
     // Ball movement whilst shooting
     if (ballMoving) {
@@ -156,7 +156,7 @@ function draw() {
         }
 
     // Check if ball reaches goal
-    if (ballY < height * 0.2) {
+    if (ballY < height * 0.3) {
       ballMoving = false;
       goalScored = true;
       if (currentLevel < 4) {
