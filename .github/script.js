@@ -9,6 +9,8 @@ let gameStarted = false;
 let wallPlayerOne, wallPlayerTwo, wallPlayerThree, wallPlayerFour;
 let wallHeight = 80;
 let currentLevel = 1;
+let goalScored = false;
+let goalDisplayTime = 60; // Time to display "Goal!" (in frames)
 
 // Loads the images
 function preload() {
@@ -113,10 +115,30 @@ function draw() {
     image(gameScreen, 0, 0, width, height); // Adjust to screen size
     image(TheBall, ballX, ballY, 40, 40); // Display ball
 
+    // Display current level
+    textSize(32);
+    fill(255);
+    text("Level: " + currentLevel, 60, 90);
+
     // Ball movement whilst shooting
     if (ballMoving) {
       ballY -= 10; // Adjust the movement speed
     }
+
+        // Display "Goal!" when scored
+        if (goalScored) {
+          textSize(64);
+          fill(255, 215, 0); // Gold color
+          textAlign(CENTER);
+          text("GOAL!", width / 2, height / 2);
+    
+          goalDisplayTime--;
+          if (goalDisplayTime <= 0) {
+            goalScored = false;
+            goalDisplayTime = 60; // Reset the display timer
+          }
+        }
+
 
     // Checks for collision with wall player 1
     if (currentLevel === 1) {
@@ -179,8 +201,9 @@ function draw() {
     }
 
     // Check if ball reaches goal
-    if (ballY < height * 0.2) {
+    if (ballY < height * 0.3) {
       ballMoving = false;
+      goalScored = true;
       if (currentLevel < 4) {
         currentLevel++; // Progress to next level
       }
