@@ -90,8 +90,8 @@ function draw() {
       wallPlayerOne.move();
       wallPlayerOne.display();
       if (wallPlayerOne.checkCollision(ballX, ballY, 40)) {
-        ballMoving = false;
-        ballY += 5;
+        //collision detected, reset game to level 1
+        restartToLevelOne();
       }
     } else if (currentLevel === 2) {
       wallPlayerOne.move();
@@ -99,8 +99,7 @@ function draw() {
       wallPlayerTwo.move();
       wallPlayerTwo.display();
       if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40)) {
-        ballMoving = false;
-        ballY += 5;
+        restartToLevelOne();
       }
     } else if (currentLevel === 3) {
       wallPlayerOne.move();
@@ -110,8 +109,8 @@ function draw() {
       wallPlayerThree.move();
       wallPlayerThree.display();
       if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40) || wallPlayerThree.checkCollision(ballX, ballY, 40)) {
-        ballMoving = false;
-        ballY += 5;
+        //collision detected, reset to level 1
+        restartToLevelOne(); 
       }
     } else if (currentLevel === 4) {
       wallPlayerOne.move();
@@ -123,10 +122,16 @@ function draw() {
       wallPlayerFour.move();
       wallPlayerFour.display();
       if (wallPlayerOne.checkCollision(ballX, ballY, 40) || wallPlayerTwo.checkCollision(ballX, ballY, 40) || wallPlayerThree.checkCollision(ballX, ballY, 40) || wallPlayerFour.checkCollision(ballX, ballY, 40)) {
-        ballMoving = false;
-        ballY += 5;
+        //collision detected, back to level 1
+        restartToLevelOne();
       }
     }
+
+        // Check if ball touches the top of the screen (wall)
+        if (ballY <= 0) {
+          // Ball touches the wall, reset game to level 1
+          restartToLevelOne();
+        }
 
     // Check if ball reaches goal
     if (ballY < height * 0.2) {
@@ -139,10 +144,22 @@ function draw() {
   }
 }
 
+// Function to restart the game from level 1
+function restartToLevelOne() {
+  currentLevel = 1; // Reset level to 1
+  resetGame(); // Reset ball and wall player positions
+}
+
 // Reset ball and wall player positions for next level
 function resetGame() {
   ballX = width / 2 - 45;
   ballY = height - 80;
+  wallPlayerOne.x = width / 2;
+  wallPlayerTwo.x = width / 2 - 150;
+  wallPlayerThree.x = width / 2 + 100;
+  wallPlayerFour.x = width / 2 + 150;
+
+  ballMoving = false; // Ensure ball is not moving
 }
 
 function keyPressed() {
