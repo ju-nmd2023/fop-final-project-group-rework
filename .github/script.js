@@ -34,7 +34,7 @@ function setup() {
   // Positions for WallPlayers
   wallPlayerOne = new WallPlayer(
     width / 2,
-    height / 2,
+    height / 2 + 200,
     40,
     80,
     3,
@@ -44,7 +44,7 @@ function setup() {
   );
   wallPlayerTwo = new WallPlayer(
     width / 2 - 150,
-    height / 3,
+    height / 3 + 210,
     40,
     80,
     4,
@@ -54,22 +54,22 @@ function setup() {
   );
   wallPlayerThree = new WallPlayer(
     width / 2 + 100,
-    height / 3 + 100,
+    height / 3 + 120,
     40,
     80,
     5,
-    width / 2 - 400,
-    width / 2 + 300,
+    width / 2 - 330,
+    width / 2 + 250,
     wallPlayerThreeImage
   );
   wallPlayerFour = new WallPlayer(
     width / 2 + 150,
-    height / 4,
+    height / 4 + 100,
     40,
     80,
     6,
-    width / 2 - 500,
-    width / 2 + 400,
+    width / 2 - 280,
+    width / 2 + 180,
     wallPlayerFourImage
   );
 }
