@@ -17,6 +17,10 @@ function preload() {
   gameScreen = loadImage("img/gamescreen.png");
   TheBall = loadImage("img/football.png");
   startScreen = loadImage("img/startscreen.png");
+  wallPlayerOneImage = loadImage("img/WP1.png");
+  wallPlayerTwoImage = loadImage("img/WP2.png");
+  wallPlayerThreeImage = loadImage("img/WP3.png");
+  wallPlayerFourImage = loadImage("img/WP4.png");
 }
 
 function setup() {
@@ -26,49 +30,53 @@ function setup() {
   // Set initial ball position dynamically
   ballX = width / 2 - 45; // Centers the ball on the canvas
   ballY = height - 80; // Position ball near the bottom
- 
+
   // Positions for WallPlayers
   wallPlayerOne = new WallPlayer(
     width / 2,
-    height / 2 + 170,
+    height / 2,
     40,
     80,
-    4,
+    3,
     width / 2 - 200,
-    width / 2 + 100
+    width / 2 + 100,
+    wallPlayerOneImage
   );
   wallPlayerTwo = new WallPlayer(
     width / 2 - 150,
-    height / 3 + 220,
+    height / 3,
     40,
     80,
-    5,
-    width / 2 - 220,
-    width / 2 + 120
+    4,
+    width / 2 - 300,
+    width / 2 + 200,
+    wallPlayerTwoImage
   );
   wallPlayerThree = new WallPlayer(
     width / 2 + 100,
-    height / 3 + 130,
+    height / 3 + 100,
     40,
     80,
-    6,
-    width / 2 - 320,
-    width / 2 + 250
+    5,
+    width / 2 - 400,
+    width / 2 + 300,
+    wallPlayerThreeImage
   );
   wallPlayerFour = new WallPlayer(
     width / 2 + 150,
-    height / 4 + 110,
+    height / 4,
     40,
     80,
-    7,
-    width / 2 - 270,
-    width / 2 + 190
+    6,
+    width / 2 - 500,
+    width / 2 + 400,
+    wallPlayerFourImage
   );
 }
 
 // WallPlayer class definition
 class WallPlayer {
-  constructor(x, y, width, height, speed, leftBound, rightBound) {
+  constructor(x, y, width, height, speed, leftBound, rightBound, img) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -77,12 +85,12 @@ class WallPlayer {
     this.direction = 1;
     this.leftBound = leftBound;
     this.rightBound = rightBound;
+    this.img = img;
   }
 
   // Display wallplayer
   display() {
-    fill(30, 144, 255);
-    rect(this.x, this.y, this.width, this.height);
+    image(this.img, this.x, this.y, this.width, this.height);
   }
 
   // Move wallplayer with boundary checks
@@ -116,29 +124,29 @@ function draw() {
     image(TheBall, ballX, ballY, 40, 40); // Display ball
 
     // Display current level
-    textSize(32);
+    textSize(50);
+    textAlign(CENTER);
     fill(255);
-    text("Level: " + currentLevel, 60, 90);
+    text("Level: " + currentLevel, 200, height / 2 - 300);
 
     // Ball movement whilst shooting
     if (ballMoving) {
       ballY -= 10; // Adjust the movement speed
     }
 
-        // Display "Goal!" when scored
-        if (goalScored) {
-          textSize(64);
-          fill(255, 215, 0); // Gold color
-          textAlign(CENTER);
-          text("GOAL!", width / 2, height / 2);
-    
-          goalDisplayTime--;
-          if (goalDisplayTime <= 0) {
-            goalScored = false;
-            goalDisplayTime = 60; // Reset the display timer
-          }
-        }
+    // Display "Goal!" when scored
+    if (goalScored) {
+      textSize(65);
+      fill(255, 215, 0); // Gold color
+      // textAlign(CENTER);
+      text("GOAL!", width / 2, height / 2);
 
+      goalDisplayTime--;
+      if (goalDisplayTime <= 0) {
+        goalScored = false;
+        goalDisplayTime = 60; // Reset the display timer
+      }
+    }
 
     // Checks for collision with wall player 1
     if (currentLevel === 1) {
@@ -230,8 +238,8 @@ function resetGame() {
   ballMoving = false; // Ensure ball is not moving
 }
 
+// Check if ENTER is pressed
 function keyPressed() {
-  // Check if ENTER is pressed
   if (keyCode === ENTER) {
     if (!gameStarted) {
       gameStarted = true;
