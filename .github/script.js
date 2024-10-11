@@ -7,6 +7,7 @@ let ballX = 640;
 let ballY = 500;
 let ballMoving = false;
 let gameStarted = false;
+let gameEnded = false;
 let wallPlayerOne, wallPlayerTwo, wallPlayerThree, wallPlayerFour;
 let wallHeight = 80;
 let currentLevel = 1;
@@ -120,6 +121,8 @@ function draw() {
   if (!gameStarted) {
     // Display start screen
     image(startScreen, 0, 0, width, height); // Adjust to screen size
+  } else if (gameEnded) {
+    image(endScreen, 0, 0, width, height); // Display end screen
   } else {
     // Display Level 1 game screen
     image(gameScreen, 0, 0, width, height); // Adjust to screen size
@@ -216,6 +219,8 @@ function draw() {
       goalScored = true;
       if (currentLevel < 4) {
         currentLevel++; // Progress to next level
+      } else {
+        gameEnded = true; // Trigger end screen after level 4
       }
       resetGame(); // Reset for next level
     }
