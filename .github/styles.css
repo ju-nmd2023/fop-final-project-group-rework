@@ -1,3 +1,15 @@
 body {
     margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
   }
+
+  #level-text {
+    position: absolute;
+    top: 100px;
+    left: 50px;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+  }
+  
