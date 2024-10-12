@@ -259,6 +259,7 @@ function keyPressed() {
 /**
  * This function was developed with assistance from OpenAI's ChatGPT.
  * Source: OpenAI's ChatGPT, October 2024
+ * https://chatgpt.com/share/670a5c46-2874-8001-b8b0-95cbb98c4c68
  */
 
 // Adjust canvas size and reposition elements when the window is resized
