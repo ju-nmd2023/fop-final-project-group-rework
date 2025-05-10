@@ -1,20 +1,13 @@
 // Variables
-let startScreen;
-let gameScreen;
-let endScreen;
+let startScreen, gameScreen, endScreen;
 let theBall;
 let gameStarted = false;
 let gameEnded = false;
 let wallPlayers = [];
-let wallHeight = 80;
 let currentLevel = 1;
 let goalScored = false;
 let goalDisplayTime = 60; // Time to display "Goal!" (in frames)
-let theBallImg;
-let wallPlayerOneImage;
-let wallPlayerTwoImage;
-let wallPlayerThreeImage;
-let wallPlayerFourImage;
+let theBallImg, wallPlayerImages = []; // Array for ball and wallplayer images
 
 // Loads the images
 function preload() {
@@ -22,10 +15,10 @@ function preload() {
   gameScreen = loadImage("img/gamescreen.png");
   endScreen = loadImage("img/endscreen.png");
   theBallImg = loadImage("img/football.png");
-  wallPlayerOneImage = loadImage("img/WP1.png");
-  wallPlayerTwoImage = loadImage("img/WP2.png");
-  wallPlayerThreeImage = loadImage("img/WP3.png");
-  wallPlayerFourImage = loadImage("img/WP4.png");
+
+  for (let i = 1; i <= 4; i++) {
+    wallPlayerImages.push(loadImage(`img/WP${i}.png`));
+  }
 }
 
 function setup() {
@@ -46,7 +39,7 @@ function setup() {
     3,
     width / 2 - 200,
     width / 2 + 100,
-    wallPlayerOneImage
+    wallPlayerImages[0]
   ),
   new WallPlayer(
     width / 2 - 150,
@@ -56,7 +49,8 @@ function setup() {
     4,
     width / 2 - 300,
     width / 2 + 200,
-    wallPlayerTwoImage
+    wallPlayerImages[1]
+
   ),
   new WallPlayer(
     width / 2 + 100,
@@ -66,7 +60,8 @@ function setup() {
     5,
     width / 2 - 330,
     width / 2 + 250,
-    wallPlayerThreeImage
+    wallPlayerImages[2]
+
   ),
   new WallPlayer(
     width / 2 + 150,
@@ -76,7 +71,8 @@ function setup() {
     6,
     width / 2 - 280,
     width / 2 + 180,
-    wallPlayerFourImage
+    wallPlayerImages[3]
+
   )
  ];
 }
