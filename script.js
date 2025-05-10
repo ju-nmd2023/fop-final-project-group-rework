@@ -2,24 +2,26 @@
 let startScreen;
 let gameScreen;
 let endScreen;
-let TheBall;
-let ballX = 640;
-let ballY = 500;
-let ballMoving = false;
+let theBall;
 let gameStarted = false;
 let gameEnded = false;
-let wallPlayerOne, wallPlayerTwo, wallPlayerThree, wallPlayerFour;
+let wallPlayers = [];
 let wallHeight = 80;
 let currentLevel = 1;
 let goalScored = false;
 let goalDisplayTime = 60; // Time to display "Goal!" (in frames)
+let theBallImg;
+let wallPlayerOneImage;
+let wallPlayerTwoImage;
+let wallPlayerThreeImage;
+let wallPlayerFourImage;
 
 // Loads the images
 function preload() {
   startScreen = loadImage("img/startscreen.png");
   gameScreen = loadImage("img/gamescreen.png");
   endScreen = loadImage("img/endscreen.png");
-  TheBall = loadImage("img/football.png");
+  theBallImg = loadImage("img/football.png");
   wallPlayerOneImage = loadImage("img/WP1.png");
   wallPlayerTwoImage = loadImage("img/WP2.png");
   wallPlayerThreeImage = loadImage("img/WP3.png");
@@ -30,12 +32,13 @@ function setup() {
   // Create canvas based on window size
   createCanvas(windowWidth, windowHeight);
 
-  // Set initial ball position dynamically
-  ballX = width / 2 - 45; // Centers the ball on the canvas
-  ballY = height - 80; // Position ball near the bottom
+  // Create the ball instance
+  theBall = new Ball(width / 2 - 45, height - 80, 40, theBallImg);
 
-  // Positions for WallPlayers
-  wallPlayerOne = new WallPlayer(
+
+  // Array containing WallPlayers
+  wallPlayers = [ 
+    new WallPlayer(
     width / 2,
     height / 2 + 200,
     40,
@@ -44,8 +47,8 @@ function setup() {
     width / 2 - 200,
     width / 2 + 100,
     wallPlayerOneImage
-  );
-  wallPlayerTwo = new WallPlayer(
+  ),
+  new WallPlayer(
     width / 2 - 150,
     height / 3 + 210,
     40,
@@ -54,8 +57,8 @@ function setup() {
     width / 2 - 300,
     width / 2 + 200,
     wallPlayerTwoImage
-  );
-  wallPlayerThree = new WallPlayer(
+  ),
+  new WallPlayer(
     width / 2 + 100,
     height / 3 + 120,
     40,
@@ -64,8 +67,8 @@ function setup() {
     width / 2 - 330,
     width / 2 + 250,
     wallPlayerThreeImage
-  );
-  wallPlayerFour = new WallPlayer(
+  ),
+  new WallPlayer(
     width / 2 + 150,
     height / 4 + 100,
     40,
@@ -74,7 +77,8 @@ function setup() {
     width / 2 - 280,
     width / 2 + 180,
     wallPlayerFourImage
-  );
+  )
+ ];
 }
 
 // WallPlayer class definition
@@ -106,16 +110,49 @@ class WallPlayer {
     }
   }
 
-  // Check for collision with ball and wallplayer
-  checkCollision(ballX, ballY, ballSize) {
+  // Check for collision with ball and wallplayer!!!!
+  checkCollision(ball) {
     return (
-      ballX < this.x + this.width &&
-      ballX + ballSize > this.x &&
-      ballY < this.y + this.height &&
-      ballY + ballSize > this.y
+      ball.x < this.x + this.width &&
+      ball.x + ball.size > this.x &&
+      ball.y < this.y + this.height &&
+      ball.y + ball.size > this.y
     );
   }
 }
+
+  // BALL'S PROPERTIES AND BEHAVIOR
+  class Ball {
+  constructor(x, y, size, img) {
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.img = img;
+    this.moving = false;
+    this.width = size * 2;
+    this.height = size * 1.5;
+  }
+
+  // Display the ball
+  display() {
+    image(this.img, this.x, this.y, this.size * 2, this.size * 1.5);
+  }
+
+  // Move the ball
+  move() {
+    if (this.moving) {
+      this.y -= 10;
+    }
+  }
+
+  //Reset ball position and state
+  reset() {
+    this.x = width / 2 - 45;
+    this.y = height - 80;
+    this.moving = false; //Ensuring the ball's not moving when reset
+  }
+}
+
 
 function draw() {
   if (!gameStarted) {
@@ -126,21 +163,17 @@ function draw() {
   } else {
     // Display Level 1 game screen
     image(gameScreen, 0, 0, width, height); // Adjust to screen size
-    image(TheBall, ballX, ballY, 80, 60); // Display ball
+    theBall.display(); //Display the ball
+    theBall.move(); //Move the ball
+
 
     // Display current level
     textSize(50);
     textFont("Spiky-016");
     textAlign(CENTER);
     fill(255, 255, 0);
-    text("Level: " + currentLevel, 200, height / 2 - 300);
+    text("Level: " + currentLevel, 250, height / 2 - 300);
   
-
-    // Ball movement whilst shooting
-    if (ballMoving) {
-      ballY -= 10; // Adjust the movement speed
-    }
-
     // Display "Goal!" when scored
     if (goalScored) {
       textSize(65);
@@ -155,77 +188,34 @@ function draw() {
       }
     }
 
-    // Checks for collision with wall player 1
-    if (currentLevel === 1) {
-      wallPlayerOne.move();
-      wallPlayerOne.display();
-      if (wallPlayerOne.checkCollision(ballX, ballY, 40)) {
-        //collision detected, reset game to level 1
+    // Move and display wallplayers
+    for(let i = 0; i < currentLevel; i++) {
+      wallPlayers[i].move();
+      wallPlayers[i].display();
+
+    // Check collision with the ball
+      if (wallPlayers[i].checkCollision(theBall)) {
         restartToLevelOne();
-      }
-    } else if (currentLevel === 2) {
-      wallPlayerOne.move();
-      wallPlayerOne.display();
-      wallPlayerTwo.move();
-      wallPlayerTwo.display();
-      if (
-        wallPlayerOne.checkCollision(ballX, ballY, 40) ||
-        wallPlayerTwo.checkCollision(ballX, ballY, 40)
-      ) {
-        restartToLevelOne();
-      }
-    } else if (currentLevel === 3) {
-      wallPlayerOne.move();
-      wallPlayerOne.display();
-      wallPlayerTwo.move();
-      wallPlayerTwo.display();
-      wallPlayerThree.move();
-      wallPlayerThree.display();
-      if (
-        wallPlayerOne.checkCollision(ballX, ballY, 40) ||
-        wallPlayerTwo.checkCollision(ballX, ballY, 40) ||
-        wallPlayerThree.checkCollision(ballX, ballY, 40)
-      ) {
-        //collision detected, reset to level 1
-        restartToLevelOne();
-      }
-    } else if (currentLevel === 4) {
-      wallPlayerOne.move();
-      wallPlayerOne.display();
-      wallPlayerTwo.move();
-      wallPlayerTwo.display();
-      wallPlayerThree.move();
-      wallPlayerThree.display();
-      wallPlayerFour.move();
-      wallPlayerFour.display();
-      if (
-        wallPlayerOne.checkCollision(ballX, ballY, 40) ||
-        wallPlayerTwo.checkCollision(ballX, ballY, 40) ||
-        wallPlayerThree.checkCollision(ballX, ballY, 40) ||
-        wallPlayerFour.checkCollision(ballX, ballY, 40)
-      ) {
-        //collision detected, back to level 1
-        restartToLevelOne();
+        return; //Skip further checks if collision occurs
       }
     }
 
-    // Check if ball touches the top of the screen (wall)
-    if (ballY <= 0) {
-      // Ball touches the wall, reset game to level 1
+    // Check if ball touches wall
+     if (theBall.y <= 0) {
       restartToLevelOne();
-    }
+     } 
 
-    // Check if ball reaches goal
-    if (ballY < height * 0.3) {
-      ballMoving = false;
+    // Goal reached
+     if (theBall.y < height * 0.3) {
+      theBall.moving = false;
       goalScored = true;
-      if (currentLevel < 4) {
-        currentLevel++; // Progress to next level
+      if (currentLevel < wallPlayers.length) {
+        currentLevel++;
       } else {
-        gameEnded = true; // Trigger end screen after level 4
+        gameEnded = true;
       }
-      resetGame(); // Reset for next level
-    }
+      theBall.reset();
+    } 
   }
 }
 
@@ -235,38 +225,35 @@ function restartToLevelOne() {
   resetGame(); // Reset ball and wall player positions
 }
 
+
 // Reset ball and wall player positions for next level
 function resetGame() {
-  ballX = width / 2 - 45;
-  ballY = height - 80;
-  wallPlayerOne.x = width / 2;
-  wallPlayerTwo.x = width / 2 - 150;
-  wallPlayerThree.x = width / 2 + 100;
-  wallPlayerFour.x = width / 2 + 150;
-
-  ballMoving = false; // Ensure ball is not moving
+  theBall.reset(); // Reset ball position
+  wallPlayers[0].x = width / 2;
+  wallPlayers[1].x = width / 2 - 150;
+  wallPlayers[2].x = width / 2 + 100;
+  wallPlayers[3].x = width / 2 + 150;
 }
+
 
 // Check if ENTER is pressed
 function keyPressed() {
   if (keyCode === ENTER) {
     if (!gameStarted) {
       gameStarted = true;
-    } else if (!ballMoving) {
-      ballMoving = true;
+    } else if (!theBall.moving) {
+      theBall.moving = true;
     }
   }
 }
 
-/**
- * This function was developed with assistance from OpenAI's ChatGPT.
+/*** This function was developed with assistance from OpenAI's ChatGPT.
  * Source: OpenAI's ChatGPT, October 2024
- * https://chatgpt.com/share/670a5c46-2874-8001-b8b0-95cbb98c4c68
- */
+ * https://chatgpt.com/share/670a5c46-2874-8001-b8b0-95cbb98c4c68 ***/
 
 // Adjust canvas size and reposition elements when the window is resized
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  ballX = width / 2 - 45;
-  ballY = height - 80;
+  theBall.x = width / 2 - 45;
+  theBall.y = height - 80;
 }
