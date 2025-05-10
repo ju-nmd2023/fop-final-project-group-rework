@@ -126,13 +126,15 @@ function draw() {
   } else {
     // Display Level 1 game screen
     image(gameScreen, 0, 0, width, height); // Adjust to screen size
-    image(TheBall, ballX, ballY, 40, 40); // Display ball
+    image(TheBall, ballX, ballY, 80, 60); // Display ball
 
     // Display current level
     textSize(50);
+    textFont("Spiky-016");
     textAlign(CENTER);
-    fill(255);
+    fill(255, 255, 0);
     text("Level: " + currentLevel, 200, height / 2 - 300);
+  
 
     // Ball movement whilst shooting
     if (ballMoving) {
