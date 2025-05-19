@@ -1,12 +1,18 @@
+
+/**Most of the code was reorganized and cleaned up to match the requirements for the project (+adding loops/arrays) with help from ChatGPT */
+// https://chatgpt.com/c/681f6c4c-dab4-8001-b8d5-baf26bb8c101 //
+
 // Variables
 let startScreen, gameScreen, endScreen;
 let theBall;
 let gameStarted = false;
 let gameEnded = false;
-let wallPlayers = [];
-let currentLevel = 1;
 let goalScored = false;
+let currentLevel = 1;
+let goalTextSize = 65;
+let goalTextGrowing = true;
 let goalDisplayTime = 60; // Time to display "Goal!" (in frames)
+let wallPlayers = []; // Arrays that stores the wallplayers
 let theBallImg, wallPlayerImages = []; // Array for ball and wallplayer images
 
 // Loads the images
@@ -172,7 +178,15 @@ function draw() {
   
     // Display "Goal!" when scored
     if (goalScored) {
-      textSize(65);
+      if (goalTextGrowing) {
+        goalTextSize += 2;
+        if (goalTextSize >= 85) goalTextGrowing = false;
+      } else {
+        goalTextSize -= 2;
+        if (goalTextSize <= 65) goalTextGrowing = true;
+      }
+
+      textSize(goalTextSize);
       fill(255, 215, 0); // Gold color
       // textAlign(CENTER);
       text("GOAL!", width / 2, height / 2);
@@ -181,6 +195,8 @@ function draw() {
       if (goalDisplayTime <= 0) {
         goalScored = false;
         goalDisplayTime = 60; // Reset the display timer
+        goalTextSize = 65; // Reset size
+        goalTextGrowing = true;
       }
     }
 
@@ -207,6 +223,13 @@ function draw() {
       goalScored = true;
       if (currentLevel < wallPlayers.length) {
         currentLevel++;
+
+      /*** This loop was created with help of ChatGPT. Used only for general tips and ideas (e.g., function suggestions and game polish),
+      * not for writing core functionality. You can view the specific conversation here:
+      *https://chatgpt.com/share/6820efbe-8c98-8001-9cd9-4fe5cd02141a*/
+        for (let i = 0; i < currentLevel; i++) { 
+          wallPlayers[i].speed += 0.4;
+        }
       } else {
         gameEnded = true;
       }
