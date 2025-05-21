@@ -1,26 +1,76 @@
+/** Most of the code was reorganized and cleaned up to match the requirements for the project (+adding loops/arrays) with help from ChatGPT,
+ https://chatgpt.com/c/681f6c4c-dab4-8001-b8d5-baf26bb8c101 */
 
-/**Most of the code was reorganized and cleaned up to match the requirements for the project (+adding loops/arrays) with help from ChatGPT */
-// https://chatgpt.com/c/681f6c4c-dab4-8001-b8d5-baf26bb8c101 //
+/** This ChatGPT link includes some help and inspiration with creating backgrounds and texts with animations for all screens, 
+ https://chatgpt.com/share/682bbbe2-25c8-8001-9850-8a819f1aea66 */
+
+/** This ChatGPT link includes some help and inspiration with creating animation for the end screen, waving text and bouncing ball,
+ https://chatgpt.com/share/682cc896-fac0-8001-a0e3-11ccfbb83ab9 */
+
+/** This ChatGPT link inludes help with an updated reorganizing and structure of the whole code,
+ https://chatgpt.com/share/682d037b-5cfc-8001-a584-ee96cdab4b3d */
 
 // Variables
-let startScreen, gameScreen, endScreen;
+let fieldY;
 let theBall;
-let gameStarted = false;
-let gameEnded = false;
-let goalScored = false;
+let theBallImg, goalImg;
+let gameScreen, endScreen;
+
+let alphas = {
+  wave: 0,
+  target: 200,
+  grafittiText: 0,
+};
+
+let endBall = {
+  x: -100,
+  y: 400,
+  speedX: 8,
+  velocityY: -10,
+  gravity: 0.4,
+  size: 60,
+};
+
+let gameState = {
+  smashed: false,
+  started: false,
+  ended: false,
+  goalScored: false,
+};
+
+let goalText = {
+  size: 65,
+  growing: true,
+  displayTime: 60, // Time to display "Goal!" (in frames)
+};
+
+let startText = {
+  size: 30,
+  growing: true,
+};
+
+let sun = { x: 550, y: 150 };
 let currentLevel = 1;
-let goalTextSize = 65;
-let goalTextGrowing = true;
-let goalDisplayTime = 60; // Time to display "Goal!" (in frames)
-let wallPlayers = []; // Arrays that stores the wallplayers
-let theBallImg, wallPlayerImages = []; // Array for ball and wallplayer images
+
+let smashFrame = 0;
+let fieldHeight = 550;
+let startTextSize = 30;
+let waveSpeed = 0.2;
+gameState.started = false;
+gameState.ended = false;
+let startTextGrowing = true;
+
+// Arrays
+let wallPlayers = [];
+let wallPlayerImages = [];
+let cloudXOffsets = [-150, 100, 300];
 
 // Loads the images
 function preload() {
-  startScreen = loadImage("img/startscreen.png");
-  gameScreen = loadImage("img/gamescreen.png");
+  goalImg = loadImage("img/goal.png");
   endScreen = loadImage("img/endscreen.png");
   theBallImg = loadImage("img/football.png");
+  gameScreen = loadImage("img/gamescreen.png");
 
   for (let i = 1; i <= 4; i++) {
     wallPlayerImages.push(loadImage(`img/WP${i}.png`));
@@ -31,56 +81,55 @@ function setup() {
   // Create canvas based on window size
   createCanvas(windowWidth, windowHeight);
 
-  // Create the ball instance
-  theBall = new Ball(width / 2 - 45, height - 80, 40, theBallImg);
+  // Create grass patch for game screen
+  fieldY = height - fieldHeight;
 
+  // Create the ball instance
+  theBall = new Ball(width / 2 - 60, height - 170, 40, theBallImg);
 
   // Array containing WallPlayers
-  wallPlayers = [ 
+  wallPlayers = [
     new WallPlayer(
-    width / 2,
-    height / 2 + 200,
-    40,
-    80,
-    3,
-    width / 2 - 200,
-    width / 2 + 100,
-    wallPlayerImages[0]
-  ),
-  new WallPlayer(
-    width / 2 - 150,
-    height / 3 + 210,
-    40,
-    80,
-    4,
-    width / 2 - 300,
-    width / 2 + 200,
-    wallPlayerImages[1]
-
-  ),
-  new WallPlayer(
-    width / 2 + 100,
-    height / 3 + 120,
-    40,
-    80,
-    5,
-    width / 2 - 330,
-    width / 2 + 250,
-    wallPlayerImages[2]
-
-  ),
-  new WallPlayer(
-    width / 2 + 150,
-    height / 4 + 100,
-    40,
-    80,
-    6,
-    width / 2 - 280,
-    width / 2 + 180,
-    wallPlayerImages[3]
-
-  )
- ];
+      width / 2,
+      height / 2 + 200,
+      40,
+      80,
+      3,
+      width / 2 - 200,
+      width / 2 + 100,
+      wallPlayerImages[0]
+    ),
+    new WallPlayer(
+      width / 2 - 150,
+      height / 3 + 210,
+      40,
+      80,
+      4,
+      width / 2 - 300,
+      width / 2 + 200,
+      wallPlayerImages[1]
+    ),
+    new WallPlayer(
+      width / 2 + 100,
+      height / 3 + 120,
+      40,
+      80,
+      5,
+      width / 2 - 330,
+      width / 2 + 250,
+      wallPlayerImages[2]
+    ),
+    new WallPlayer(
+      width / 2 + 150,
+      height / 4 + 100,
+      40,
+      80,
+      6,
+      width / 2 - 280,
+      width / 2 + 180,
+      wallPlayerImages[3]
+    ),
+  ];
 }
 
 // WallPlayer class definition
@@ -123,8 +172,8 @@ class WallPlayer {
   }
 }
 
-  // BALL'S PROPERTIES AND BEHAVIOR
-  class Ball {
+// BALL'S PROPERTIES AND BEHAVIOR
+class Ball {
   constructor(x, y, size, img) {
     this.x = x;
     this.y = y;
@@ -149,63 +198,65 @@ class WallPlayer {
 
   //Reset ball position and state
   reset() {
-    this.x = width / 2 - 45;
-    this.y = height - 80;
+    this.x = width / 2 - 60;
+    this.y = height - 170;
     this.moving = false; //Ensuring the ball's not moving when reset
   }
 }
 
-
 function draw() {
-  if (!gameStarted) {
+  drawGameBackground(); // Draws the same bg for all screens
+  alphas.wave = lerp(alphas.wave, alphas.target, 0.02);
+
+  if (!gameState.started) {
     // Display start screen
-    image(startScreen, 0, 0, width, height); // Adjust to screen size
-  } else if (gameEnded) {
-    image(endScreen, 0, 0, width, height); // Display end screen
+    drawStartScreen();
+  } else if (gameState.ended) {
+    drawEndScreen();
   } else {
     // Display Level 1 game screen
-    image(gameScreen, 0, 0, width, height); // Adjust to screen size
+    drawFootballField();
     theBall.display(); //Display the ball
     theBall.move(); //Move the ball
 
-
     // Display current level
+    noStroke();
     textSize(50);
     textFont("Spiky-016");
     textAlign(CENTER);
-    fill(255, 255, 0);
-    text("Level: " + currentLevel, 250, height / 2 - 300);
-  
+    fill(0, 100, 255);
+    text("Level: " + currentLevel, 1500, height / 1.8 - 300);
+
     // Display "Goal!" when scored
-    if (goalScored) {
-      if (goalTextGrowing) {
-        goalTextSize += 2;
-        if (goalTextSize >= 85) goalTextGrowing = false;
+    if (gameState.goalScored) {
+      if (goalText.growing) {
+        goalText.size += 2;
+        if (goalText.size >= 85) goalText.growing = false;
       } else {
-        goalTextSize -= 2;
-        if (goalTextSize <= 65) goalTextGrowing = true;
+        goalText.size -= 2;
+        if (goalText.size <= 65) goalText.growing = true;
       }
 
-      textSize(goalTextSize);
-      fill(255, 215, 0); // Gold color
-      // textAlign(CENTER);
+      textSize(goalText.size);
+      fill(0, 220, 255); // blue color
+      textAlign(CENTER, CENTER);
       text("GOAL!", width / 2, height / 2);
 
-      goalDisplayTime--;
-      if (goalDisplayTime <= 0) {
-        goalScored = false;
-        goalDisplayTime = 60; // Reset the display timer
-        goalTextSize = 65; // Reset size
-        goalTextGrowing = true;
+      goalText.displayTime--;
+      if (goalText.displayTime <= 0) {
+        gameState.goalScored = false;
+        goalText.displayTime = 60; // Reset the display timer
+        goalText.size = 65; // Reset size
+        goalText.growing = true;
       }
     }
 
     // Move and display wallplayers
-    for(let i = 0; i < currentLevel; i++) {
+    for (let i = 0; i < currentLevel; i++) {
       wallPlayers[i].move();
       wallPlayers[i].display();
 
-    // Check collision with the ball
+      // Check collision with the ball
       if (wallPlayers[i].checkCollision(theBall)) {
         restartToLevelOne();
         return; //Skip further checks if collision occurs
@@ -213,28 +264,28 @@ function draw() {
     }
 
     // Check if ball touches wall
-     if (theBall.y <= 0) {
+    if (theBall.y <= 0) {
       restartToLevelOne();
-     } 
+    }
 
     // Goal reached
-     if (theBall.y < height * 0.3) {
+    if (theBall.y < height * 0.3) {
       theBall.moving = false;
-      goalScored = true;
+      gameState.goalScored = true;
       if (currentLevel < wallPlayers.length) {
         currentLevel++;
 
-      /*** This loop was created with help of ChatGPT. Used only for general tips and ideas (e.g., function suggestions and game polish),
-      * not for writing core functionality. You can view the specific conversation here:
-      *https://chatgpt.com/share/6820efbe-8c98-8001-9cd9-4fe5cd02141a*/
-        for (let i = 0; i < currentLevel; i++) { 
+        /*** This loop was created with help of ChatGPT. Used only for general tips and ideas (e.g., function suggestions and game polish),
+         * not for writing core functionality. You can view the specific conversation here:
+         *https://chatgpt.com/share/6820efbe-8c98-8001-9cd9-4fe5cd02141a*/
+        for (let i = 0; i < currentLevel; i++) {
           wallPlayers[i].speed += 0.4;
         }
       } else {
-        gameEnded = true;
+        gameState.ended = true;
       }
       theBall.reset();
-    } 
+    }
   }
 }
 
@@ -243,7 +294,6 @@ function restartToLevelOne() {
   currentLevel = 1; // Reset level to 1
   resetGame(); // Reset ball and wall player positions
 }
-
 
 // Reset ball and wall player positions for next level
 function resetGame() {
@@ -254,25 +304,161 @@ function resetGame() {
   wallPlayers[3].x = width / 2 + 150;
 }
 
+// Game text + instructions
+function drawStartScreen() {
+  fill(0, 100, 255);
+  textAlign(CENTER);
+  textSize(100);
+  textFont("Spiky-016");
+  text("GOAL DASH", width / 2, height / 2 - 100);
+  fill(0, 220, 255);
+
+  if (startText.growing) {
+    startText.size += 0.1;
+    if (startText.size >= 35) startText.growing = false;
+  } else {
+    startText.size -= 0.1;
+    if (startText.size <= 28) startText.growing = true;
+  }
+
+  textSize(startText.size);
+  text("Press ENTER to Start", width / 2, height / 2);
+}
+
+function drawGameBackground() {
+  // Gradient background
+  for (let y = 0; y < height; y++) {
+    let inter = map(y, 0, height, 0, 1);
+    let c = lerpColor(color("#87CEEB"), color("#ffffff"), inter);
+    stroke(c);
+    line(0, y, width, y);
+  }
+
+  // Draw sun
+  noStroke();
+  fill(255, 220, 0);
+  ellipse(sun.x, sun.y, 150, 150);
+
+  // Animate clouds
+  for (let i = 0; i < cloudXOffsets.length; i++) {
+    cloudXOffsets[i] += 0.6;
+    if (cloudXOffsets[i] > width + 150) {
+      cloudXOffsets[i] = -200;
+    }
+    drawCloud(cloudXOffsets[i], 100 + i * 70);
+  }
+}
+
+function drawFootballField() {
+  // Grass patch
+  noStroke();
+  fill(0, 120, 0);
+  rect(0, fieldY, width, fieldHeight);
+
+  // White lines on the grass
+  stroke(255);
+  strokeWeight(2);
+  noFill();
+
+  // Outer rectangle of field (optional, can comment out if not needed)
+  rect(50, fieldY + 20, width - 100, fieldHeight - 40);
+
+  // Now draw the goal area and penalty area near bottom center
+  let goalLineY = fieldY + 20 + fieldHeight - 510; // Position of the goal line on the field
+  let centerX = width / 2;
+
+  // Goal area rectangle
+  rect(centerX - 300, goalLineY - 60, 625, 250);
+
+  // Display and position goal image
+  image(goalImg, centerX - 300, goalLineY - 325, 600, 400);
+
+  // Penalty mark & size
+  noStroke();
+  fill(255);
+  ellipse(centerX, goalLineY + 355, 25, 25);
+}
+
+function drawCloud(x, y) {
+  fill(255);
+  noStroke();
+  ellipse(x, y, 80, 80);
+  ellipse(x + 40, y + 10, 80, 80);
+  ellipse(x - 40, y + 10, 80, 80);
+  ellipse(x, y + 20, 100, 80);
+}
 
 // Check if ENTER is pressed
 function keyPressed() {
   if (keyCode === ENTER) {
-    if (!gameStarted) {
-      gameStarted = true;
+    if (!gameState.started) {
+      gameState.started = true;
+      console.log("Game started:", gameState.started);
     } else if (!theBall.moving) {
       theBall.moving = true;
     }
   }
 }
 
-/*** This function was developed with assistance from OpenAI's ChatGPT.
- * Source: OpenAI's ChatGPT, October 2024
- * https://chatgpt.com/share/670a5c46-2874-8001-b8b0-95cbb98c4c68 ***/
+function drawEndScreen() {
+  drawGameBackground();
+  animateBall();
+  drawCongratsText();
+}
+
+function animateBall() {
+  image(theBallImg, endBall.x, endBall.y, endBall.size * 5, endBall.size * 3.5);
+
+  if (endBall.x < width + 100) {
+    endBall.x += endBall.speedX;
+    endBall.y += endBall.velocityY;
+    endBall.velocityY += endBall.gravity;
+  }
+
+  if (endBall.x > width / 3 && smashFrame === 0) {
+    smashFrame = frameCount;
+  }
+}
+
+function drawCongratsText() {
+  if (smashFrame > 0) {
+    let elapsed = frameCount - smashFrame;
+    let message = "CONGRATS,YOU MADE IT!!!";
+    let fontSize = 60;
+    let spacing = 50;
+    let waveAmplitude = 20;
+    let waveSpeed = 0.2;
+    let pulse = sin(elapsed * 0.15) * 5;
+
+    textAlign(CENTER, CENTER);
+    textFont("Spiky-016");
+    textSize(fontSize + pulse);
+    fill(0, 150, 255, alphas.wave);
+    noStroke();
+
+    let startX = width / 2 - (message.length * spacing) / 2;
+    let y = height / 2 - 100;
+
+    for (let i = 0; i < message.length; i++) {
+      let charX = startX + i * spacing;
+      let waveY = sin(elapsed * waveSpeed + i * 0.5) * waveAmplitude;
+
+      fill(0, 150, 255, alphas.wave);
+      text(message[i], charX + 2, y + waveY + 2);
+
+      fill(0, 150, 255, alphas.wave);
+      text(message[i], charX, y + waveY);
+    }
+  }
+}
+
+/*** This function was developed with assistance from OpenAI's ChatGPT,
+ * https://chatgpt.com/share/670a5c46-2874-8001-b8b0-95cbb98c4c68 */
 
 // Adjust canvas size and reposition elements when the window is resized
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  fieldY = height - fieldHeight;
   theBall.x = width / 2 - 45;
   theBall.y = height - 80;
 }
