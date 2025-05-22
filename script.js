@@ -139,14 +139,14 @@ class Ball {
     this.rotation = 0;
   }
 
-  display() {
-    push();
-    translate(this.x + this.size, this.y + this.size);
-    rotate(this.rotation);
-    imageMode(CENTER);
-    image(this.img, 0, 0, this.size * 2, this.size * 1.5);
-    pop();
-  }
+display() {
+  push();
+  translate(this.x + this.size / 2, this.y + this.size / 2); // Move to center of ball
+  rotate(this.rotation); // Rotate around center
+  imageMode(CENTER); // Draw from center
+  image(this.img, 0, 0, this.size, this.size);
+  pop();
+}
 
   move() {
     if (this.moving) {
