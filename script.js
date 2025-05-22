@@ -16,6 +16,7 @@ let fieldY;
 let theBall;
 let theBallImg, goalImg;
 let gameScreen, endScreen;
+let restartButton;
 
 let alphas = {
   wave: 0,
@@ -81,6 +82,11 @@ function setup() {
   sun.y = height * 0.2;
   theBall = new Ball(width / 2 - 60, height - 170, 40, theBallImg);
   createWallPlayers();
+
+  restartButton = createButton('Restart');
+  restartButton.position(width / 2 - 40, height / 2 + 100); // Adjust as needed
+  restartButton.mousePressed(restartGame);
+  restartButton.hide(); // Hide it until the game ends
 }
 
 function createWallPlayers() {
@@ -362,6 +368,21 @@ function drawEndScreen() {
   drawGameBackground();
   animateBall();
   drawCongratsText();
+  if (gameState.ended) {
+  restartButton.show();
+}
+}
+
+function restartGame() {
+  gameState.started = false;
+  gameState.ended = false;
+  gameState.smashed = false;
+  gameState.goalScored = false;
+  currentLevel = 1;
+
+  theBall.reset();
+  createWallPlayers();
+  restartButton.hide();
 }
 
 function animateBall() {
