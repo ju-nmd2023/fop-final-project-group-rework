@@ -11,6 +11,7 @@
  https://chatgpt.com/share/682d037b-5cfc-8001-a584-ee96cdab4b3d */
 
 // Variables
+// Variables
 let fieldY;
 let theBall;
 let theBallImg, goalImg;
@@ -41,7 +42,7 @@ let gameState = {
 let goalText = {
   size: 65,
   growing: true,
-  displayTime: 60, // Time to display "Goal!" (in frames)
+  displayTime: 60,
 };
 
 let startText = {
@@ -49,15 +50,12 @@ let startText = {
   growing: true,
 };
 
-let sun = { x: 550, y: 150 };
+let sun = { x: 0, y: 0 };
 let currentLevel = 1;
 
 let smashFrame = 0;
 let fieldHeight = 550;
-let startTextSize = 30;
 let waveSpeed = 0.2;
-gameState.started = false;
-gameState.ended = false;
 let startTextGrowing = true;
 
 // Arrays
@@ -65,7 +63,6 @@ let wallPlayers = [];
 let wallPlayerImages = [];
 let cloudXOffsets = [-150, 100, 300];
 
-// Loads the images
 function preload() {
   goalImg = loadImage("img/goal.png");
   endScreen = loadImage("img/endscreen.png");
@@ -78,61 +75,26 @@ function preload() {
 }
 
 function setup() {
-  // Create canvas based on window size
   createCanvas(windowWidth, windowHeight);
-
-  // Create grass patch for game screen
   fieldY = height - fieldHeight;
-
-  // Create the ball instance
+  sun.x = width * 0.85;
+  sun.y = height * 0.2;
   theBall = new Ball(width / 2 - 60, height - 170, 40, theBallImg);
+  createWallPlayers();
+}
 
-  // Array containing WallPlayers
+function createWallPlayers() {
+  let centerX = width / 2;
+  let baseY = height / 2;
+
   wallPlayers = [
-    new WallPlayer(
-      width / 2,
-      height / 2 + 200,
-      40,
-      80,
-      3,
-      width / 2 - 200,
-      width / 2 + 100,
-      wallPlayerImages[0]
-    ),
-    new WallPlayer(
-      width / 2 - 150,
-      height / 3 + 210,
-      40,
-      80,
-      4,
-      width / 2 - 300,
-      width / 2 + 200,
-      wallPlayerImages[1]
-    ),
-    new WallPlayer(
-      width / 2 + 100,
-      height / 3 + 120,
-      40,
-      80,
-      5,
-      width / 2 - 330,
-      width / 2 + 250,
-      wallPlayerImages[2]
-    ),
-    new WallPlayer(
-      width / 2 + 150,
-      height / 4 + 100,
-      40,
-      80,
-      6,
-      width / 2 - 280,
-      width / 2 + 180,
-      wallPlayerImages[3]
-    ),
+    new WallPlayer(centerX, baseY + 200, 40, 80, 3, centerX - 200, centerX + 100, wallPlayerImages[0]),
+    new WallPlayer(centerX - 150, baseY + 210, 40, 80, 4, centerX - 300, centerX + 200, wallPlayerImages[1]),
+    new WallPlayer(centerX + 100, baseY + 120, 40, 80, 5, centerX - 330, centerX + 250, wallPlayerImages[2]),
+    new WallPlayer(centerX + 150, baseY + 100, 40, 80, 6, centerX - 280, centerX + 180, wallPlayerImages[3]),
   ];
 }
 
-// WallPlayer class definition
 class WallPlayer {
   constructor(x, y, width, height, speed, leftBound, rightBound, img) {
     this.x = x;
@@ -146,22 +108,17 @@ class WallPlayer {
     this.img = img;
   }
 
-  // Display wallplayer
   display() {
     image(this.img, this.x, this.y, this.width, this.height);
   }
 
-  // Move wallplayer with boundary checks
   move() {
     this.x += this.speed * this.direction;
-
-    // Reverse direction if wallplayer hits boundaries
     if (this.x > this.rightBound || this.x < this.leftBound) {
       this.direction *= -1;
     }
   }
 
-  // Check for collision with ball and wallplayer!!!!
   checkCollision(ball) {
     return (
       ball.x < this.x + this.width &&
@@ -172,7 +129,6 @@ class WallPlayer {
   }
 }
 
-// BALL'S PROPERTIES AND BEHAVIOR
 class Ball {
   constructor(x, y, size, img) {
     this.x = x;
@@ -180,27 +136,29 @@ class Ball {
     this.size = size;
     this.img = img;
     this.moving = false;
-    this.width = size * 2;
-    this.height = size * 1.5;
+    this.rotation = 0;
   }
 
-  // Display the ball
   display() {
-    image(this.img, this.x, this.y, this.size * 2, this.size * 1.5);
+    push();
+    translate(this.x + this.size, this.y + this.size);
+    rotate(this.rotation);
+    imageMode(CENTER);
+    image(this.img, 0, 0, this.size * 2, this.size * 1.5);
+    pop();
   }
 
-  // Move the ball
   move() {
     if (this.moving) {
-      this.y -= 10;
+      this.y -= 20;
+      this.rotation += 2;
     }
   }
 
-  //Reset ball position and state
   reset() {
     this.x = width / 2 - 60;
     this.y = height - 170;
-    this.moving = false; //Ensuring the ball's not moving when reset
+    this.moving = false;
   }
 }
 
@@ -459,6 +417,11 @@ function drawCongratsText() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   fieldY = height - fieldHeight;
-  theBall.x = width / 2 - 45;
-  theBall.y = height - 80;
+  sun.x = width * 0.85;
+  sun.y = height * 0.2;
+  theBall.reset();
+  createWallPlayers();
+  for (let i = 0; i < cloudXOffsets.length; i++) {
+    cloudXOffsets[i] = -150 + i * 250;
+  }
 }
