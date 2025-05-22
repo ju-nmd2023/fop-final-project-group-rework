@@ -150,7 +150,7 @@ display() {
 
   move() {
     if (this.moving) {
-      this.y -= 20;
+      this.y -= 17;
       this.rotation += 2;
     }
   }
@@ -227,7 +227,7 @@ function draw() {
     }
 
     // Goal reached
-    if (theBall.y < height * 0.3) {
+    if (theBall.y < height * 0.4) {
       theBall.moving = false;
       gameState.goalScored = true;
       if (currentLevel < wallPlayers.length) {
@@ -365,7 +365,7 @@ function drawEndScreen() {
 }
 
 function animateBall() {
-  image(theBallImg, endBall.x, endBall.y, endBall.size * 5, endBall.size * 3.5);
+  image(theBallImg, endBall.x, endBall.y, endBall.size * 5, endBall.size * 5);
 
   if (endBall.x < width + 100) {
     endBall.x += endBall.speedX;
