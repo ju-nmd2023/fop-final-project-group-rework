@@ -83,7 +83,7 @@ function setup() {
   theBall = new Ball(width / 2 - 60, height - 170, 40, theBallImg);
   createWallPlayers();
 
-  restartButton = createButton('Restart');
+  restartButton = createButton("Restart");
   restartButton.position(width / 2 - 40, height / 2 + 100); // Adjust as needed
   restartButton.mousePressed(restartGame);
   restartButton.hide(); // Hide it until the game ends
@@ -94,10 +94,46 @@ function createWallPlayers() {
   let baseY = height / 2;
 
   wallPlayers = [
-    new WallPlayer(centerX, baseY + 200, 40, 80, 3, centerX - 200, centerX + 100, wallPlayerImages[0]),
-    new WallPlayer(centerX - 150, baseY + 210, 40, 80, 4, centerX - 300, centerX + 200, wallPlayerImages[1]),
-    new WallPlayer(centerX + 100, baseY + 120, 40, 80, 5, centerX - 330, centerX + 250, wallPlayerImages[2]),
-    new WallPlayer(centerX + 150, baseY + 100, 40, 80, 6, centerX - 280, centerX + 180, wallPlayerImages[3]),
+    new WallPlayer(
+      centerX,
+      baseY + 200,
+      40,
+      80,
+      3,
+      centerX - 200,
+      centerX + 100,
+      wallPlayerImages[0]
+    ),
+    new WallPlayer(
+      centerX - 150,
+      baseY + 210,
+      40,
+      80,
+      4,
+      centerX - 300,
+      centerX + 200,
+      wallPlayerImages[1]
+    ),
+    new WallPlayer(
+      centerX + 100,
+      baseY + 120,
+      40,
+      80,
+      5,
+      centerX - 330,
+      centerX + 250,
+      wallPlayerImages[2]
+    ),
+    new WallPlayer(
+      centerX + 150,
+      baseY + 100,
+      40,
+      80,
+      6,
+      centerX - 280,
+      centerX + 180,
+      wallPlayerImages[3]
+    ),
   ];
 }
 
@@ -145,14 +181,14 @@ class Ball {
     this.rotation = 0;
   }
 
-display() {
-  push();
-  translate(this.x + this.size / 2, this.y + this.size / 2); // Move to center of ball
-  rotate(this.rotation); // Rotate around center
-  imageMode(CENTER); // Draw from center
-  image(this.img, 0, 0, this.size, this.size);
-  pop();
-}
+  display() {
+    push();
+    translate(this.x + this.size / 2, this.y + this.size / 2); // Move to center of ball
+    rotate(this.rotation); // Rotate around center
+    imageMode(CENTER); // Draw from center
+    image(this.img, 0, 0, this.size, this.size);
+    pop();
+  }
 
   move() {
     if (this.moving) {
@@ -332,17 +368,18 @@ function drawFootballField() {
   let centerX = width / 2;
 
   // Goal area rectangle
-  rect(centerX - 300, goalLineY - 60, 625, 250);
+  rect(centerX - 355, goalLineY - 60, 625, 250);
 
   // Display and position goal image
-  image(goalImg, centerX - 300, goalLineY - 325, 600, 400);
+  image(goalImg, centerX - 350, goalLineY - 325, 600, 400);
 
   // Penalty mark & size
   noStroke();
   fill(255);
-  ellipse(centerX, goalLineY + 355, 25, 25);
+  ellipse(centerX - 35, goalLineY + 350, 25, 25);
 }
 
+// Display animated clouds
 function drawCloud(x, y) {
   fill(255);
   noStroke();
@@ -352,12 +389,11 @@ function drawCloud(x, y) {
   ellipse(x, y + 20, 100, 80);
 }
 
-// Check if ENTER is pressed
+// Check if ENTER key is pressed
 function keyPressed() {
   if (keyCode === ENTER) {
     if (!gameState.started) {
       gameState.started = true;
-      console.log("Game started:", gameState.started);
     } else if (!theBall.moving) {
       theBall.moving = true;
     }
@@ -369,8 +405,8 @@ function drawEndScreen() {
   animateBall();
   drawCongratsText();
   if (gameState.ended) {
-  restartButton.show();
-}
+    restartButton.show();
+  }
 }
 
 function restartGame() {
@@ -385,6 +421,7 @@ function restartGame() {
   restartButton.hide();
 }
 
+// Displaying animated ball on endscreen
 function animateBall() {
   image(theBallImg, endBall.x, endBall.y, endBall.size * 5, endBall.size * 5);
 
@@ -399,6 +436,7 @@ function animateBall() {
   }
 }
 
+// Displaying animated text on endscreen
 function drawCongratsText() {
   if (smashFrame > 0) {
     let elapsed = frameCount - smashFrame;
