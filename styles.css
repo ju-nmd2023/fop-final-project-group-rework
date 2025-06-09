@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Arial Narrow Bold", sans-serif;
+}
+
+#level-text {
+  position: absolute;
+  top: 100px;
+  left: 50px;
+  margin: 0;
+  color: white;
+  font-size: 50px;
+  text-align: center;
+}
+
+button {
+  font-size: 50px;
+  padding: 20px 50px;
+  background-color: #464646bd;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
