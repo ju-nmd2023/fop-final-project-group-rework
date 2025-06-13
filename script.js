@@ -1,5 +1,5 @@
 /** Most of the code was reorganized and cleaned up to match the requirements for the project (+adding loops/arrays) with help from ChatGPT,
- https://chatgpt.com/c/681f6c4c-dab4-8001-b8d5-baf26bb8c101 */
+ https://chatgpt.com/share/684c5389-185c-8001-887d-22f29ae3f3dc */
 
 /** This ChatGPT link includes some help and inspiration with creating backgrounds and texts with animations for all screens, 
  https://chatgpt.com/share/682bbbe2-25c8-8001-9850-8a819f1aea66 */
